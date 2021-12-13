@@ -1,5 +1,7 @@
 import pygame as pg
 
+from fruit import Fruit
+
 successes, failures = pg.init()
 print("{0} successes and {1} failures".format(successes, failures))
 
@@ -21,11 +23,12 @@ def draw_grid():
     cell_width = width / cols
     for y in range(rows):
         for x in range(cols):
-            print(x)
             rect = pg.Rect(cell_width * x, cell_height * y, cell_width, cell_height)
             color = WHITE if (x + y) % 2 else BLACK
             pg.draw.rect(window, color, rect)
 
+
+fruit = Fruit(rows, cols)
 
 running = True
 
@@ -36,4 +39,5 @@ while running:
             running = False
 
     draw_grid()
+    fruit.draw_fruit(window)
     pg.display.update()
