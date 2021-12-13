@@ -2,7 +2,8 @@ import random
 from typing import List, Tuple
 
 import pygame as pg
-from constants import cell_height, cell_width, cols, rows
+
+from game.constants import cell_height, cell_width, cols, rows
 
 
 class Fruit:

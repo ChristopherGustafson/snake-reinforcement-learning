@@ -1,6 +1,7 @@
 import numpy as np
 import pygame as pg
-from constants import (
+
+from game.constants import (
     BLACK,
     FPS,
     MOVES_PER_SECOND,
@@ -12,8 +13,8 @@ from constants import (
     rows,
     width,
 )
-from fruit import Fruit
-from snake import Direction, Snake
+from game.fruit import Fruit
+from game.snake import Direction, Snake
 
 successes, failures = pg.init()
 print("{0} successes and {1} failures".format(successes, failures))
@@ -31,7 +32,7 @@ class Game:
         self.fruit = Fruit(self.snake.positions)
         self.score = 0
 
-    def game_state(self):
+    def game_state(self) -> np.ndarray:
         state = np.zeros((rows, cols))
         for pos in self.snake.positions:
             (x, y) = pos
@@ -57,15 +58,12 @@ class Game:
         else:
             self.snake.pop_end()
 
-        if self.snake.check_collision():
-            self.snake.reset()
-
         self.draw_grid()
         self.fruit.render(window)
         self.snake.render(window)
         pg.display.update()
 
-        return self.game_state(), self.score
+        return self.game_state(), self.score, self.snake.check_collision()
 
     def play_game(self):
         running = True
