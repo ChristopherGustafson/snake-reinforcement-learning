@@ -1,23 +1,39 @@
-import sys
 import pygame as pg
-pg.init()
+
+successes, failures = pg.init()
+print("{0} successes and {1} failures".format(successes, failures))
 
 clock = pg.time.Clock()
 clock.tick(1)
 # Game Constants
 rows = cols = 20
 
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
 width, height = 400, 400
-window = pg.display.set_mode((width,height))
-window.fill((255,255,255))
+window = pg.display.set_mode((width, height))
+window.fill(WHITE)
 
-for y in range(rows):
-    for x in range(cols):
-        rect = pg.Rect(width/cols * x, height/rows * y, width/cols, height/rows)
-        color = (255,255,255) if x+y%2 else (0,0,0)
-        pg.draw.rect(window, color, rect)
-        pg.display.update()
 
-while True:
+def draw_grid():
+    cell_height = height / rows
+    cell_width = width / cols
+    for y in range(rows):
+        for x in range(cols):
+            print(x)
+            rect = pg.Rect(cell_width * x, cell_height * y, cell_width, cell_height)
+            color = WHITE if (x + y) % 2 else BLACK
+            pg.draw.rect(window, color, rect)
+
+
+running = True
+
+while running:
     clock.tick(1)
-    pass
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
+
+    draw_grid()
+    pg.display.update()
