@@ -1,7 +1,6 @@
 from enum import Enum
 
 import pygame as pg
-
 from constants import cell_height, cell_width, cols, rows
 
 
