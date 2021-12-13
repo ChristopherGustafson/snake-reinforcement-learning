@@ -18,8 +18,8 @@ def opposite(direction1: Direction, direction2: Direction):
     return False
 
 
-STARTING_X = cols / 2
-STARTING_Y = rows / 5
+STARTING_X = int(cols / 2)
+STARTING_Y = int(rows / 5)
 STARTING_DIR = Direction.DOWN
 SNAKE_COLOR = (0, 100, 0)
 
@@ -41,25 +41,20 @@ class Snake:
             return
         self.direction = direction
 
-    def move(self, increase_length):
+    def move(self):
         (x, y) = self.positions[0]
         if self.direction == Direction.UP:
             self.positions.insert(0, (x, y - 1))
-            if not increase_length:
-                self.positions.pop()
         elif self.direction == Direction.DOWN:
             self.positions.insert(0, (x, y + 1))
-            if not increase_length:
-                self.positions.pop()
         if self.direction == Direction.RIGHT:
             self.positions.insert(0, (x + 1, y))
-            if not increase_length:
-                self.positions.pop()
         if self.direction == Direction.LEFT:
             self.positions.insert(0, (x - 1, y))
-            if not increase_length:
-                self.positions.pop()
         return self.positions[0]
+
+    def pop_end(self):
+        self.positions.pop()
 
     def check_collision(self):
         # Check collision with walls

@@ -1,6 +1,17 @@
 import pygame as pg
 
-from constants import BLACK, WHITE, cell_height, cell_width, cols, height, rows, width
+from constants import (
+    BLACK,
+    FPS,
+    MOVES_PER_SECOND,
+    WHITE,
+    cell_height,
+    cell_width,
+    cols,
+    height,
+    rows,
+    width,
+)
 from fruit import Fruit
 from snake import Direction, Snake
 
@@ -22,32 +33,50 @@ def draw_grid():
             pg.draw.rect(window, color, rect)
 
 
-fruit = Fruit(rows, cols)
-
 running = True
 
 snake = Snake()
+fruit = Fruit(snake.positions)
+
+score = 0
+
+iteration = 0
+
 while running:
-    clock.tick(1)
+    clock.tick(FPS)
+
+    did_turn = False
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_DOWN:
                 snake.turn(Direction.DOWN)
+                did_turn = True
             elif event.key == pg.K_UP:
                 snake.turn(Direction.UP)
+                did_turn = True
             elif event.key == pg.K_RIGHT:
                 snake.turn(Direction.RIGHT)
+                did_turn = True
             elif event.key == pg.K_LEFT:
                 snake.turn(Direction.LEFT)
+                did_turn = True
 
-    draw_grid()
-    fruit.draw_fruit(window)
+    if iteration >= FPS / MOVES_PER_SECOND or did_turn:
+        head = snake.move()
+        if head == fruit.position:
+            score += 1
+            fruit.generate_fruit(snake.positions)
+        else:
+            snake.pop_end()
+        iteration = 0
 
-    snake.move(False)
     if snake.check_collision():
         snake.reset()
 
+    draw_grid()
+    fruit.render(window)
     snake.render(window)
     pg.display.update()
+    iteration += 1
