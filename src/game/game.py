@@ -32,50 +32,55 @@ def draw_grid():
             pg.draw.rect(window, color, rect)
 
 
-running = True
+def play_game():
+    running = True
 
-snake = Snake()
-fruit = Fruit(snake.positions)
+    snake = Snake()
+    fruit = Fruit(snake.positions)
 
-score = 0
+    score = 0
 
-iteration = 0
+    iteration = 0
 
-while running:
-    clock.tick(FPS)
+    while running:
+        clock.tick(FPS)
 
-    did_turn = False
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            running = False
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_DOWN:
-                snake.turn(Direction.DOWN)
-                did_turn = True
-            elif event.key == pg.K_UP:
-                snake.turn(Direction.UP)
-                did_turn = True
-            elif event.key == pg.K_RIGHT:
-                snake.turn(Direction.RIGHT)
-                did_turn = True
-            elif event.key == pg.K_LEFT:
-                snake.turn(Direction.LEFT)
-                did_turn = True
+        did_turn = False
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                running = False
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_DOWN:
+                    snake.turn(Direction.DOWN)
+                    did_turn = True
+                elif event.key == pg.K_UP:
+                    snake.turn(Direction.UP)
+                    did_turn = True
+                elif event.key == pg.K_RIGHT:
+                    snake.turn(Direction.RIGHT)
+                    did_turn = True
+                elif event.key == pg.K_LEFT:
+                    snake.turn(Direction.LEFT)
+                    did_turn = True
 
-    if iteration >= FPS / MOVES_PER_SECOND or did_turn:
-        head = snake.move()
-        if head == fruit.position:
-            score += 1
-            fruit.generate_fruit(snake.positions)
-        else:
-            snake.pop_end()
-        iteration = 0
+        if iteration >= FPS / MOVES_PER_SECOND or did_turn:
+            head = snake.move()
+            if head == fruit.position:
+                score += 1
+                fruit.generate_fruit(snake.positions)
+            else:
+                snake.pop_end()
+            iteration = 0
 
-    if snake.check_collision():
-        snake.reset()
+        if snake.check_collision():
+            snake.reset()
 
-    draw_grid()
-    fruit.render(window)
-    snake.render(window)
-    pg.display.update()
-    iteration += 1
+        draw_grid()
+        fruit.render(window)
+        snake.render(window)
+        pg.display.update()
+        iteration += 1
+
+
+if __name__ == "__main__":
+    play_game()
