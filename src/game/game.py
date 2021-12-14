@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pygame as pg
 
@@ -19,27 +21,36 @@ from game.snake import Direction, Snake
 successes, failures = pg.init()
 print("{0} successes and {1} failures".format(successes, failures))
 
-clock = pg.time.Clock()
-clock.tick(1)
 
 window = pg.display.set_mode((width, height))
 window.fill(WHITE)
 
 
 class Game:
-    def __init__(self):
+    def reset(self):
         self.snake = Snake()
         self.fruit = Fruit(self.snake.positions)
         self.score = 0
 
+    def __init__(self):
+        self.clock = pg.time.Clock()
+        self.reset()
+
     def game_state(self) -> np.ndarray:
-        state = np.zeros((rows, cols))
-        for pos in self.snake.positions:
+        state = np.zeros((rows, cols, 3))
+        for pos in self.snake.positions[1:]:
             (x, y) = pos
-            state[y][x] = 1
+            state[min(y, rows - 1)][min(x, cols - 1)] = [1, 0, 0]
+        (x, y) = self.snake.positions[0]
+        state[min(y, rows - 1)][min(x, cols - 1)] = [0, 1, 0]
         (x, y) = self.fruit.position
-        state[y][x] = 2
+        state[y][x] = [0, 0, 1]
         return state
+
+    def distance(self) -> float:
+        head = self.snake.positions[0]
+        goal = self.fruit.position
+        return math.sqrt((head[0] - goal[0]) ** 2 + (head[1] - goal[1]) ** 2)
 
     def run_action(self, action: Direction):
         if action == Direction.UP:
@@ -63,7 +74,12 @@ class Game:
         self.snake.render(window)
         pg.display.update()
 
-        return self.game_state(), self.score, self.snake.check_collision()
+        return (
+            self.game_state(),
+            self.score,
+            self.snake.check_collision(),
+            self.distance(),
+        )
 
     def play_game(self):
         running = True
@@ -71,7 +87,7 @@ class Game:
         iteration = 0
 
         while running:
-            clock.tick(FPS)
+            self.clock.tick(FPS)
 
             did_turn = False
             for event in pg.event.get():

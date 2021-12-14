@@ -21,19 +21,20 @@ def opposite(direction1: Direction, direction2: Direction):
 STARTING_X = int(cols / 2)
 STARTING_Y = int(rows / 5)
 STARTING_DIR = Direction.DOWN
+HEAD_COLOR = (0, 0, 100)
 SNAKE_COLOR = (0, 100, 0)
 
 
 class Snake:
+    tail_color = SNAKE_COLOR
+    head_color = HEAD_COLOR
+
     def __init__(self):
-        self.positions = [(STARTING_X, STARTING_Y)]
-        self.direction = STARTING_DIR
-        self.color = SNAKE_COLOR
+        self.reset()
 
     def reset(self):
         self.positions = [(STARTING_X, STARTING_Y)]
         self.direction = STARTING_DIR
-        self.color = SNAKE_COLOR
 
     def turn(self, direction: Direction):
         # Only allow turning in non-opposite direction
@@ -67,7 +68,7 @@ class Snake:
         return False
 
     def render(self, window):
-        for pos in self.positions:
+        for i, pos in enumerate(self.positions):
             (x, y) = pos
             rect = pg.Rect(cell_width * x, cell_height * y, cell_width, cell_height)
-            pg.draw.rect(window, self.color, rect)
+            pg.draw.rect(window, self.head_color if i == 0 else self.tail_color, rect)
