@@ -47,3 +47,7 @@ venv.bak/
 .vscode
 
 .png
+
+# Intermediate models
+*.h5
+!cnn_model_final.h5

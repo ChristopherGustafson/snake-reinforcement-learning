@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import pygame as pg
 
-from game.constants import cell_height, cell_width, cols, rows
+from game.constants import CELL_HEIGHT, CELL_WIDTH, COLS, FONT_HEIGHT, ROWS
 
 
 class Fruit:
@@ -12,8 +12,8 @@ class Fruit:
 
     def _generate_random_position(self) -> Tuple[int, int]:
         return (
-            random.randint(0, cols - 1),
-            random.randint(0, rows - 1),
+            random.randint(1, COLS - 1),
+            random.randint(1, ROWS - 1),
         )
 
     def generate_fruit(self, invalid_positions: List[Tuple[int, int]]) -> None:
@@ -23,9 +23,9 @@ class Fruit:
 
     def render(self, screen: pg.surface.Surface) -> None:
         fruit = pg.Rect(
-            cell_width * self.position[0],
-            cell_height * self.position[1],
-            cell_width,
-            cell_height,
+            CELL_WIDTH * self.position[0],
+            CELL_HEIGHT * self.position[1] + FONT_HEIGHT,
+            CELL_WIDTH,
+            CELL_HEIGHT,
         )
         pg.draw.ellipse(screen, (255, 0, 0), fruit)
