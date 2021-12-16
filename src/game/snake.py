@@ -33,7 +33,7 @@ class Snake:
         self.reset()
 
     def reset(self):
-        self.positions = [(STARTING_X, STARTING_Y)]
+        self.positions = [(STARTING_X, STARTING_Y), (STARTING_X, STARTING_Y - 1)]
         self.direction = STARTING_DIR
 
     def turn(self, direction: Direction):
