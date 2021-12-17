@@ -1,10 +1,21 @@
+import pygame as pg
+
 WHITE = (255, 255, 255)
-BLACK = (200, 200, 200)
+LIGHT_GRAY = (200, 200, 200)
+GRAY = (128, 128, 128)
+BLACK = (64, 64, 64)
 FPS = 60
 MOVES_PER_SECOND = 3
 
 # Game Constants
-rows = cols = 20
-width, height = 400, 400
-cell_height = height / rows
-cell_width = width / cols
+ROWS = COLS = 10
+GRID_WIDTH, GRID_HEIGHT = 400, 400
+CELL_HEIGHT = GRID_HEIGHT / ROWS
+CELL_WIDTH = GRID_WIDTH / COLS
+
+pg.font.init()
+FONT = pg.font.SysFont("monospace", 16)
+FONT_HEIGHT = FONT.get_height() + 10
+
+SCREEN_HEIGHT = GRID_HEIGHT + FONT_HEIGHT
+SCREEN_WIDTH = GRID_WIDTH
