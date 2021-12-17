@@ -9,14 +9,13 @@ from cnn_model.constants import (
     BATCH_SIZE,
     EPSILON,
     EPSILON_DECAY,
-    FEATURES,
     FINAL_EPSILON,
     GAMMA,
     MEMORY_SIZE,
     WEIGHTS_SAVE_FILE_NAME,
 )
 from cnn_model.replay import Replay
-from cnn_model.utils import get_initial_state, get_reward, get_target
+from cnn_model.utils import add_new_state, get_initial_state, get_reward, get_target
 from game.constants import COLS, ROWS
 from game.game import Game, Player
 from game.snake import Direction
@@ -44,8 +43,10 @@ def train_model(
             predictions = model.predict(current_state)[0]
             if random.random() < epsilon:
                 action_index = random.randrange(len(Direction))
+                action = Direction(action_index)
             else:
                 action_index = np.argmax(predictions)
+
             action = Direction(action_index)
             # Execute actoin
             state, new_score, game_over, new_distance = game.run_action(action)
@@ -58,10 +59,7 @@ def train_model(
             current_score = new_score
 
             # Reshape state
-            state = np.reshape(state, (1, ROWS, COLS, 1, FEATURES))
-            # Add new game frame to the next state, delete last (oldest) state
-            next_state = np.append(next_state, state, axis=3)
-            next_state = np.delete(next_state, 0, axis=3)
+            next_state = add_new_state(state, next_state)
 
             experience = [current_state, action_index, reward, next_state]
 

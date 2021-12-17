@@ -11,6 +11,7 @@ from cnn_model.constants import (
 )
 from game.constants import COLS, ROWS
 from game.game import Game
+from game.snake import Direction
 
 
 def get_target(model: keras.Model, gamma, experience, game_over):
@@ -51,3 +52,18 @@ def get_reward(
         return REWARD_CLOSER
 
     return REWARD_LIVING
+
+
+def add_new_state(new_state, current_state):
+    # Reshape state
+    new_state_reshaped = np.reshape(new_state, (1, ROWS, COLS, 1, FEATURES))
+    # Add new game frame to the next state, delete last (oldest) state
+    new_current_state = np.append(current_state, new_state_reshaped, axis=3)
+    new_current_state = np.delete(new_current_state, 0, axis=3)
+    return new_current_state
+
+
+def predict_move(cnn_model, state):
+    predictions = cnn_model.predict(state)[0]  # type: ignore
+    action_index = np.argmax(predictions)
+    return Direction(action_index)
