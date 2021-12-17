@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.keras as keras
 
-from game.game import Game, Model
+from game.game import Game, Player
 from game.snake import Direction
 
 ACTIONS = [Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT]
@@ -139,7 +139,7 @@ class DQN_Agent:
         self.model.fit(dataset, epochs=1, verbose=False)
 
     def train_agent(self, games, epochs_per_game):
-        game = Game(Model.NN)
+        game = Game(Player.NN)
         highscore = 0
         for game_i in range(games):
             # Initial game state

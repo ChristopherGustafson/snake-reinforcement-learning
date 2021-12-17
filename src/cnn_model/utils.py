@@ -43,7 +43,8 @@ def get_reward(
 ):
     if game_over:
         return REWARD_DIE
-    if new_distance > previous_score:
+
+    if new_score > previous_score:
         return REWARD_WIN
 
     if new_distance < previous_distance:

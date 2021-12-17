@@ -27,9 +27,13 @@ successes, failures = pg.init()
 print("{0} successes and {1} failures".format(successes, failures))
 
 
-class Model(Enum):
-    NN = 0
-    CNN = 1
+class Player(Enum):
+    Human = "human"
+    NN = "nn"
+    CNN = "cnn"
+
+    def __str__(self) -> str:
+        return self.value
 
 
 class Game:
@@ -39,7 +43,7 @@ class Game:
         self.score = 0
         return self.game_state()
 
-    def __init__(self, model: Model = Model.NN, use_graphics=True):
+    def __init__(self, model: Player, use_graphics=True):
         self.snake = Snake()
         self.fruit = Fruit(self.snake.positions)
         self.clock = pg.time.Clock()
@@ -132,13 +136,15 @@ class Game:
         # Fruit (goal)
         (x, y) = self.fruit.position
         state[y][x][1] = 1.0
+
         return state
 
     def game_state(self):
-        if self.model is Model.CNN:
+        if self.model is Player.CNN:
             return self.game_state_cnn()
-        else:
+        elif self.model is Player.NN:
             return self.game_state_nn()
+        return self.game_state_nn()
 
     def distance(self) -> float:
         head = self.snake.positions[0]
@@ -237,5 +243,5 @@ class Game:
 
 
 if __name__ == "__main__":
-    game = Game()
+    game = Game(Player.Human)
     game.play_game()
