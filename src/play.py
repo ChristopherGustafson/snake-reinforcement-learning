@@ -90,7 +90,7 @@ if __name__ == "__main__":
     )
 
     argument_parser.add_argument(
-        "-g", "--graphics", help="Use graphics for the model", action="store_true"
+        "-ng", "--no-graphics", help="Use graphics for the model", action="store_true"
     )
 
     argument_parser.add_argument(
@@ -103,6 +103,6 @@ if __name__ == "__main__":
     args = argument_parser.parse_args()
 
     if args.player is not Player.Human:
-        model_play(args.player, args.weights_path, args.graphics)
+        model_play(args.player, args.weights_path, not args.no_graphics)
     else:
         user_play()
