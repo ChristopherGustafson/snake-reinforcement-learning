@@ -10,20 +10,22 @@ from game.snake import Direction
 
 ACTIONS = [Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT]
 
-
-# Constants, to be add in constants.py
-
+# Agent constants
 HIDDEN_LAYERS = 3
 HIDDEN_LAYER_SIZE = 150
 STATE_SPACE_SIZE = 12
 ACTION_SPACE = 4
-LEARNING_RATE = 0.0005
-EPSILON = 0.9
+LEARNING_RATE = 0.0001
+EPSILON = 0.95
 EPSILON_DECAY = 0.9995
-FINAL_EPSILON = 0.0
+FINAL_EPSILON = 0.05
 MAX_MEMORY_SIZE = 3000
-GAMMA = 0.9
+GAMMA = 0.85
 BATCH_SIZE = 200
+
+MODEL_SAVE_INTERVAL = 100
+TOTAL_GAMES = 4000
+EPOCHS_PER_GAME = 10
 
 
 class DQN_Agent:
@@ -113,9 +115,45 @@ class DQN_Agent:
     def reshape_input(self, state: np.ndarray):
         return state.reshape((1, self.state_space_size))
 
+    def replay_memory(self, epochs_per_game):
+        state_batch = np.squeeze(self.state_memory)
+        # Current state batch = all stored previous states except latest
+        current_state_batch = state_batch[0:-1, :]
+        # Next state batch = all stored previous states except oldest
+        next_state_batch = state_batch[1:, :]
+
+        # Previous rewards, except oldest
+        reward_batch = np.array(self.reward_memory)
+        reward_batch = reward_batch[1:]
+
+        for _ in range(epochs_per_game):
+            # Predict target based on current state batch
+            target_batch = self.model.predict(current_state_batch)
+            # Find the actions for the highest prediction
+            action_i = np.argmax(target_batch, axis=1)
+            # Update target with prediction from new batch
+            target_batch[
+                np.arange(target_batch.shape[0]), action_i
+            ] = reward_batch + GAMMA * np.max(
+                self.model.predict(next_state_batch), axis=1
+            )
+
+            # fit the model, using the current state batch and the updated target_batch
+            dataset = tf.data.Dataset.from_tensor_slices(
+                (current_state_batch, target_batch)
+            )
+            dataset = (
+                dataset.shuffle(BATCH_SIZE)
+                .prefetch(buffer_size=BATCH_SIZE)
+                .batch(BATCH_SIZE)
+            )
+
+            self.model.fit(dataset, verbose=False, epochs=1)
+
     def train_agent(self, games, epochs_per_game):
         game = Game()
         highscore = 0
+        total_scores = 0
         for game_i in range(games):
             # Initial game state
             game.reset()
@@ -149,42 +187,22 @@ class DQN_Agent:
 
             # After game is finished, train the model on random samples for
             # specified number of epochs
-            state_batch = np.squeeze(self.state_memory)
-            current_state_batch = state_batch[0:-1, :]
-            next_state_batch = state_batch[1:, :]
+            self.replay_memory(epochs_per_game)
 
-            reward_batch = np.array(self.reward_memory)
-            reward_batch = reward_batch[1:]
-
-            for _ in range(epochs_per_game):
-                target_batch = self.model.predict(current_state_batch)
-                action_i = np.argmax(target_batch, axis=1)
-                target_batch[
-                    np.arange(target_batch.shape[0]), action_i
-                ] = reward_batch + GAMMA * np.max(
-                    self.model.predict(next_state_batch), axis=1
-                )
-
-                dataset = tf.data.Dataset.from_tensor_slices(
-                    (current_state_batch, target_batch)
-                )
-                dataset = (
-                    dataset.shuffle(200)
-                    .prefetch(buffer_size=BATCH_SIZE)
-                    .batch(BATCH_SIZE)
-                )
-
-                self.model.fit(dataset, verbose=False, epochs=1)
+            total_scores = total_scores + score
             if score > highscore:
                 highscore = score
-            print(
-                f"Finished game: {game_i}, epsilon: {self.epsilon}, score: {score}, highscore: {highscore}"
-            )
-        self.model.save_weights("model.h5", overwrite=True)
+            if game_i % MODEL_SAVE_INTERVAL == 0:
+                self.model.save_weights("nn_model.h5", overwrite=True)
+                avg_score = 0
+                if game_i != 0:
+                    avg_score = total_scores / MODEL_SAVE_INTERVAL
+                    total_scores = 0
+                print(
+                    f"Finished {game_i} games: , epsilon: {self.epsilon}, avg score: {avg_score}, highscore: {highscore}"
+                )
 
 
 if __name__ == "__main__":
     agent = DQN_Agent()
-    games = 4000
-    epochs_per_game = 10
-    agent.train_agent(games, epochs_per_game)
+    agent.train_agent(TOTAL_GAMES, EPOCHS_PER_GAME)
