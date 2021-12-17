@@ -10,10 +10,16 @@ This project contains 2 implementations of machine learning agents for playing s
 
 For running this project you'll need a modern Python version (>=3.9) as well as the following packages:
 
-- tensorflow
-- pygame
-- numpy
-- tqdm
+- [TensorFlow](https://www.tensorflow.org/)
+- [pygame](https://www.pygame.org/)
+- [NumPy](https://numpy.org/)
+- [tqdm](https://github.com/tqdm/tqdm)
+
+These are specified in the `requirements.txt` file and can be easily installed using pip with the following command:
+
+```bash
+pip install -r requirements.txt
+```
 
 ## Training
 
