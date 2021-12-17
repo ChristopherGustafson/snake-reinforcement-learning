@@ -19,15 +19,15 @@ def user_play():
 
 
 def model_play(player: Player, weights_path: str, use_graphics: bool = False):
-    dqn_agent = DQN_Agent()
     if player is Player.NN:
-        model = dqn_agent.build_model()
+        dqn_agent = DQN_Agent(epsilon=0.0)
+        dqn_agent.model.load_weights(weights_path)
     elif player is Player.CNN:
         model = build_model()
+        model.load_weights(weights_path)
     else:
         raise Exception("No such player: {}".format(player))
 
-    model.load_weights(weights_path)
     game = Game(player, use_graphics)
     scores = []
     rounds = 100
@@ -46,11 +46,11 @@ def model_play(player: Player, weights_path: str, use_graphics: bool = False):
                 game.clock.tick(30)
 
             if player is Player.NN:
-                next_move = dqn_agent.next_action(
-                    dqn_agent.reshape_input(current_state)
+                next_move = dqn_agent.next_action(  # type: ignore
+                    dqn_agent.reshape_input(current_state)  # type: ignore
                 )
             elif player is Player.CNN:
-                predictions = model.predict(current_state)[0]
+                predictions = model.predict(current_state)[0]  # type: ignore
                 action_index = np.argmax(predictions)
                 next_move = Direction(action_index)
 

@@ -29,17 +29,24 @@ EPOCHS_PER_GAME = 10
 
 
 class DQN_Agent:
-    def __init__(self):
-        self.hidden_layers = HIDDEN_LAYERS
-        self.hidden_layer_size = HIDDEN_LAYER_SIZE
-        self.state_space_size = STATE_SPACE_SIZE
-        self.action_space_size = ACTION_SPACE
-        self.learning_rate = LEARNING_RATE
-        self.epsilon = EPSILON
+    hidden_layers = HIDDEN_LAYERS
+    hidden_layer_size = HIDDEN_LAYER_SIZE
+    state_space_size = STATE_SPACE_SIZE
+    action_space_size = ACTION_SPACE
 
-        self.state_memory = collections.deque(maxlen=MAX_MEMORY_SIZE)
-        self.reward_memory = collections.deque(maxlen=MAX_MEMORY_SIZE)
-        self.target_memory = collections.deque(maxlen=MAX_MEMORY_SIZE)
+    def __init__(
+        self,
+        epsilon: float = EPSILON,
+        learning_rate: float = LEARNING_RATE,
+        max_memory_size: int = MAX_MEMORY_SIZE,
+    ):
+        self.learning_rate = learning_rate
+        self.epsilon = epsilon
+
+        self.state_memory = collections.deque(maxlen=max_memory_size)
+        self.reward_memory = collections.deque(maxlen=max_memory_size)
+        self.target_memory = collections.deque(maxlen=max_memory_size)
+
         self.model = self.build_model()
 
     def build_model(self):
