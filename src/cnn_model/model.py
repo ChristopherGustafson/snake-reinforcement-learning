@@ -6,6 +6,9 @@ from game.snake import Direction
 
 
 def build_model() -> keras.Model:
+    """
+    Build the CNN model
+    """
     # The input is: The grid, N last states, and some features (fruit and snake)
     game_input = keras.layers.Input(
         shape=(ROWS, COLS, STORED_LAST_STATES, FEATURES),
@@ -18,6 +21,7 @@ def build_model() -> keras.Model:
         name="conv1",
     )(game_input)
 
+    # Only one max pooling layer
     pooling1 = (
         keras.layers.MaxPooling3D(
             pool_size=(2, 2, 1),

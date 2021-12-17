@@ -15,6 +15,14 @@ from game.snake import Direction
 
 
 def get_target(model: keras.Model, gamma, experience, game_over):
+    """
+    Get the target for the experience. Used when training the model using DQN.
+
+    :param model: The model to train
+    :param gamma: The discount factor
+    :param experience: Whether the transition resulted in a game over
+    """
+
     current_state, action, reward, next_state = experience
     # Predict the current state (Q values)
     target = model.predict(current_state)[0]
@@ -27,6 +35,11 @@ def get_target(model: keras.Model, gamma, experience, game_over):
 
 
 def get_initial_state(game: Game):
+    """
+    Reset the game and return the initial state.
+
+    :param game: The instance of the game we want to reset
+    """
     state = np.zeros((1, ROWS, COLS, STORED_LAST_STATES, FEATURES))
 
     for i in range(STORED_LAST_STATES):
@@ -42,6 +55,15 @@ def get_reward(
     new_score: int,
     game_over: bool,
 ):
+    """
+    Get reward based on the parameters
+
+    :param previous_distance: Distance between the fruit and snake in old state
+    :param new_distance: Distance between the fruit and snake in new state
+    :param previous_score: Score in the old state
+    :param new_score: Score in the new state
+    :param game_over: Whether or not the snake died this round
+    """
     if game_over:
         return REWARD_DIE
 
@@ -55,6 +77,12 @@ def get_reward(
 
 
 def add_new_state(new_state, current_state):
+    """
+    Helper function to add a new state to the current state
+
+    :param new_state: The state to be added
+    :param current_state: Our current state, should contain the last 4 states of the game
+    """
     # Reshape state
     new_state_reshaped = np.reshape(new_state, (1, ROWS, COLS, 1, FEATURES))
     # Add new game frame to the next state, delete last (oldest) state
@@ -64,6 +92,12 @@ def add_new_state(new_state, current_state):
 
 
 def predict_move(cnn_model, state):
+    """
+    Helper function to get a predicted action from the model.
+
+    :param cnn_model: The model which makes the prediction
+    :param state: The current state of the game
+    """
     predictions = cnn_model.predict(state)[0]  # type: ignore
     action_index = np.argmax(predictions)
     return Direction(action_index)

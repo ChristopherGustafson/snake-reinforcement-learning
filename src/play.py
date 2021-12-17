@@ -12,11 +12,21 @@ from nn_model import DQN_Agent
 
 
 def user_play():
+    """
+    Play the game as a human.
+    """
     game = Game(Player.Human)
     game.play_game()
 
 
-def model_play(player: Player, weights_path: str, use_graphics: bool = False):
+def model_play(player: Player, weights_path: str, use_graphics: bool):
+    """
+    Make the model play the game
+
+    :param player: Which type of model to play
+    :param weights_path: Path the file to load weights from
+    :param use_graphics: Whether or not to show graphics
+    """
     if player is Player.NN:
         dqn_agent = DQN_Agent(epsilon=0.0)
         dqn_agent.model.load_weights(weights_path)
@@ -28,6 +38,7 @@ def model_play(player: Player, weights_path: str, use_graphics: bool = False):
 
     game = Game(player, use_graphics)
     scores = []
+    # Play for 100 rounds
     rounds = 100
     progress_bar = tqdm(total=rounds)
     for _ in range(rounds):
@@ -38,6 +49,7 @@ def model_play(player: Player, weights_path: str, use_graphics: bool = False):
             current_state = get_initial_state(game)
 
         current_score = 0
+        # Keep track of rounds where nothing happens
         uneventful_rounds = 0
         while True:
             if use_graphics:

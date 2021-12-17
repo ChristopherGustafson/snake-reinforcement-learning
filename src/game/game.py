@@ -38,12 +38,21 @@ class Player(Enum):
 
 class Game:
     def reset(self) -> np.ndarray:
+        """
+        Reset the whole game, including fruit and snake.
+        """
         self.snake.reset()
         self.fruit.generate_fruit(self.snake.positions)
         self.score = 0
         return self.game_state()
 
     def __init__(self, model: Player, use_graphics=True):
+        """
+        Initialize a new game
+
+        :param player: Type of player (model or human)
+        :param use_graphics: Whether or not to render the gameplay
+        """
         self.snake = Snake()
         self.fruit = Fruit(self.snake.positions)
         self.clock = pg.time.Clock()
@@ -74,6 +83,9 @@ class Game:
     """
 
     def game_state_nn(self) -> np.ndarray:
+        """
+        Get the current game state, modelled for the densly connected network
+        """
         state = np.zeros(12)
         # ***** Check for dangers
         # snake head y = 0 => danger up
@@ -122,6 +134,9 @@ class Game:
         return state
 
     def game_state_cnn(self) -> np.ndarray:
+        """
+        Get the current game state, modelled for the CNN model
+        """
         state = np.zeros((ROWS, COLS, FEATURES), dtype=np.float_)
 
         # Snake (tail)
@@ -140,6 +155,9 @@ class Game:
         return state
 
     def game_state(self):
+        """
+        Return the correct game state depending on player
+        """
         if self.model is Player.CNN:
             return self.game_state_cnn()
         elif self.model is Player.NN:
@@ -147,11 +165,19 @@ class Game:
         return self.game_state_nn()
 
     def distance(self) -> float:
+        """
+        Get the distance from the snakes head and the goal
+        """
         head = self.snake.positions[0]
         goal = self.fruit.position
         return math.sqrt((head[0] - goal[0]) ** 2 + (head[1] - goal[1]) ** 2)
 
     def run_action(self, action: Direction):
+        """
+        Run an action in the game
+
+        :param action: The action to run, the new direction of the snake
+        """
         if action == Direction.UP:
             self.snake.turn(Direction.UP)
         elif action == Direction.LEFT:
@@ -180,6 +206,10 @@ class Game:
         return (self.game_state(), self.score, game_over, self.distance())
 
     def play_game(self):
+        """
+        Play the game as a human
+        """
+
         running = True
         iteration = 0
         while running:
@@ -210,6 +240,9 @@ class Game:
                     self.render()
 
     def render(self):
+        """
+        Render the whole game to screen
+        """
         self.draw_grid()
         self.draw_score()
         self.fruit.render(self.window)
@@ -217,6 +250,9 @@ class Game:
         pg.display.update()
 
     def draw_grid(self):
+        """
+        Draw the grid on the window
+        """
         for y in range(ROWS):
             for x in range(COLS):
                 rect = pg.Rect(
@@ -229,6 +265,9 @@ class Game:
                 pg.draw.rect(self.window, color, rect)
 
     def draw_score(self):
+        """
+        Draw the score on the window
+        """
         rect = pg.Rect(
             0,
             0,
