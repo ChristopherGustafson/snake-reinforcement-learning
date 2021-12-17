@@ -1,4 +1,5 @@
 import math
+from enum import Enum
 
 import numpy as np
 import pygame as pg
@@ -26,6 +27,11 @@ successes, failures = pg.init()
 print("{0} successes and {1} failures".format(successes, failures))
 
 
+class Model(Enum):
+    NN = 0
+    CNN = 1
+
+
 class Game:
     def reset(self) -> np.ndarray:
         self.snake.reset()
@@ -33,12 +39,13 @@ class Game:
         self.score = 0
         return self.game_state()
 
-    def __init__(self, use_graphics=True):
+    def __init__(self, model: Model = Model.NN, use_graphics=True):
         self.snake = Snake()
         self.fruit = Fruit(self.snake.positions)
         self.clock = pg.time.Clock()
         self.highscore = 0
         self.score = 0
+        self.model = model
 
         self.use_graphics = use_graphics
         if self.use_graphics:
@@ -63,7 +70,6 @@ class Game:
     """
 
     def game_state_nn(self) -> np.ndarray:
-<<<<<<< HEAD
         state = np.zeros(12)
         # ***** Check for dangers
         # snake head y = 0 => danger up
@@ -71,8 +77,8 @@ class Game:
             state[0] = 1
         # snake head y = max_y => danger down
         elif (
-            self.snake.positions[0][1] == rows - 1
-            or self.snake.positions[0][1] == rows - 2
+            self.snake.positions[0][1] == ROWS - 1
+            or self.snake.positions[0][1] == ROWS - 2
         ):
             state[1] = 1
         # snake head x = 0 => danger left
@@ -80,8 +86,8 @@ class Game:
             state[2] = 1
         # snake head y = 0 => danger right
         if (
-            self.snake.positions[0][1] == cols - 1
-            or self.snake.positions[0][1] == cols - 2
+            self.snake.positions[0][1] == COLS - 1
+            or self.snake.positions[0][1] == COLS - 2
         ):
             state[3] = 1
 
@@ -108,7 +114,9 @@ class Game:
         # snake x > fruit x => fruit is right of snake
         elif self.snake.positions[0][0] > self.fruit.position[0]:
             state[11] = 1
-=======
+
+        return state
+
     def game_state_cnn(self) -> np.ndarray:
         state = np.zeros((ROWS, COLS, FEATURES), dtype=np.float_)
 
@@ -124,8 +132,13 @@ class Game:
         # Fruit (goal)
         (x, y) = self.fruit.position
         state[y][x][1] = 1.0
->>>>>>> ff5240b (Add CNN model)
         return state
+
+    def game_state(self):
+        if self.model is Model.CNN:
+            return self.game_state_cnn()
+        else:
+            return self.game_state_nn()
 
     def distance(self) -> float:
         head = self.snake.positions[0]

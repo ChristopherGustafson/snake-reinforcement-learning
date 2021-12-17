@@ -8,7 +8,7 @@ from cnn_model.constants import FEATURES, WEIGHTS_FILE_NAME
 from cnn_model.model import build_model
 from cnn_model.train import get_initial_state
 from game.constants import COLS, ROWS
-from game.game import Game
+from game.game import Game, Model
 from game.snake import Direction
 
 
@@ -20,7 +20,7 @@ def user_play():
 def model_play(weights_path: str, use_graphics: bool = False):
     model = build_model()
     model.load_weights(weights_path)
-    game = Game(use_graphics)
+    game = Game(Model.CNN, use_graphics)
     scores = []
     rounds = 100
     progress_bar = tqdm(total=rounds)
@@ -34,7 +34,7 @@ def model_play(weights_path: str, use_graphics: bool = False):
             predictions = model.predict(current_state)[0]
             action_index = np.argmax(predictions)
             next_move = Direction(action_index)
-            state, _, game_over = game.run_action(next_move)
+            state, _, game_over, _ = game.run_action(next_move)
 
             # Reshape state
             state = np.reshape(state, (1, ROWS, COLS, 1, FEATURES))

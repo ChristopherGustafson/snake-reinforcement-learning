@@ -2,9 +2,9 @@ from argparse import ArgumentParser
 
 import tensorflow.keras as keras
 
-from model.constants import WEIGHTS_FILE_NAME
-from model.model import build_model
-from model.train import train_model
+from cnn_model.constants import WEIGHTS_FILE_NAME
+from cnn_model.model import build_model
+from cnn_model.train import train_model
 
 if __name__ == "__main__":
     argument_parser = ArgumentParser("Model training suite")

@@ -18,7 +18,7 @@ from cnn_model.constants import (
 from cnn_model.replay import Replay
 from cnn_model.utils import get_initial_state, get_reward, get_target
 from game.constants import COLS, ROWS
-from game.game import Game
+from game.game import Game, Model
 from game.snake import Direction
 
 
@@ -31,7 +31,7 @@ def train_model(
 ):
     epsilon = EPSILON
     epoch = start_epoch
-    game = Game(use_graphics)
+    game = Game(Model.CNN, use_graphics)
     replay = Replay(MEMORY_SIZE, GAMMA)
     progress_bar = tqdm(total=epochs)
     progress_bar.update(start_epoch)
