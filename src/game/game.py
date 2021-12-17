@@ -118,8 +118,8 @@ class Game:
             state[y][x][0] = 0.5
 
         # Snake (head)
-        (x, y) = self.fruit.position
-        state[y][x][1] = 1.0
+        (x, y) = self.snake.positions[0]
+        state[y][x][0] = 1.0
 
         # Fruit (goal)
         (x, y) = self.fruit.position
